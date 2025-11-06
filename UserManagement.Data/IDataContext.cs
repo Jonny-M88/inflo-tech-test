@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using UserManagement.Data.Interfaces;
 
 namespace UserManagement.Data;
 
@@ -11,6 +11,9 @@ public interface IDataContext
     /// <typeparam name="TEntity"></typeparam>
     /// <returns></returns>
     IQueryable<TEntity> GetAll<TEntity>() where TEntity : class;
+
+    IQueryable<TEntity> GetActive<TEntity>() where TEntity : class, IEntity;
+    IQueryable<TEntity> GetInactive<TEntity>() where TEntity : class, IEntity;
 
     /// <summary>
     /// Create a new item

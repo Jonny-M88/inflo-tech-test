@@ -1,5 +1,6 @@
 html {
-  font-size: 14px;
+    user-select: none;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
@@ -19,4 +20,9 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+
+.input-container > div, input {
+    user-select: none;
+    margin-bottom: 15px;
 }

@@ -19,6 +19,7 @@ public class UsersController : Controller
             Forename = p.Forename,
             Surname = p.Surname,
             Email = p.Email,
+            DateOfBirth = p.DateOfBirth,
             IsActive = p.IsActive
         });
 
@@ -27,6 +28,36 @@ public class UsersController : Controller
             Items = items.ToList()
         };
 
+        return View(model);
+    }
+
+    [HttpGet("filter")]
+    public ViewResult FilterByActive(bool isActive)
+    {
+        var items = _userService.FilterByActive(isActive)
+         .Select(u => new UserListItemViewModel
+         {
+             Id = u.Id,
+             Forename = u.Forename,
+             Surname = u.Surname,
+             Email = u.Email,
+             DateOfBirth = u.DateOfBirth,
+             IsActive = u.IsActive
+         })
+         .ToList();
+
+        UserListViewModel model = new UserListViewModel
+        {
+            Items = items
+        };
+
+        return View("List", model);
+    }
+
+    [HttpGet("create")]
+    public IActionResult Create()
+    {
+        var model = new UserListItemViewModel();
         return View(model);
     }
 }
