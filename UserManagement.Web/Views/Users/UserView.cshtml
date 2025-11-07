@@ -1,0 +1,73 @@
+﻿@using System.Text.Json
+@using System.Text.Json.Serialization
+@using UserManagement.Web.Constants
+@using UserManagement.Web.Enum
+@model UserManagement.Web.Models.Users.UserListItemViewModel
+@{
+    bool isReadOnly = Model.Mode == FormMode.View;
+}
+
+@* Determine the view title based on the form mode *@
+<h2>
+    @(Model.Mode switch
+    {
+        FormMode.Create => "Create User",
+        FormMode.Edit => "Edit User",
+        _ => "User Details"
+    })
+</h2>
+
+
+<form asp-controller="Users" asp-action="Save" method="post">
+
+    @* Input elements associated with user properties *@
+    <div class="input-container">
+
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Mode" />
+
+        <div>
+            <input type="text" asp-for="Forename" placeholder="Forename" readonly="@isReadOnly" />
+        </div>
+        <div>
+            <input type="text" asp-for="Surname" placeholder="Surname" readonly="@isReadOnly" />
+        </div>
+        <div>
+            <input type="email" asp-for="Email" placeholder="Email Address" readonly="@isReadOnly" />
+        </div>
+        <div>
+            <input type="date" asp-for="DateOfBirth" placeholder="Date of Birth" readonly="@isReadOnly" />
+        </div>
+        <div>
+            <label>
+                <input type="checkbox" asp-for="IsActive" disabled="@isReadOnly" />
+                Account Active?
+            </label>
+        </div>
+
+        <div>
+            @* Hide the button if in view mode *@
+            @if (!isReadOnly)
+            {
+                <button id="submit-user-btn" type="submit" class="btn btn-primary" disabled>
+                    @(Model.Mode switch
+                    {
+                        FormMode.Create => "Create User",
+                        FormMode.Edit => "Save Changes",
+                        _ => "Submit"
+                    })
+            </button>
+                        }
+        </div>
+    </div>
+
+</form>
+
+<script>
+    const user = @Html.Raw(JsonSerializer.Serialize(Model, Constants.DefaultSerializerOptions))
+    console.log(user)
+    var currentUser = {...user};
+</script>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="~/js/user.js"></script>

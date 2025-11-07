@@ -14,6 +14,7 @@ public interface IDataContext
 
     IQueryable<TEntity> GetActive<TEntity>() where TEntity : class, IEntity;
     IQueryable<TEntity> GetInactive<TEntity>() where TEntity : class, IEntity;
+    IQueryable<TEntity> GetById<TEntity>(long id) where TEntity : class, IEntity;
 
     /// <summary>
     /// Create a new item
