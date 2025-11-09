@@ -36,15 +36,19 @@
         <input type="hidden" asp-for="Mode" />
 
         <div>
-            <input type="text" asp-for="Forename" placeholder="Forename" readonly="@isReadOnly" />
+            <div><span>Forename</span></div>
+            <input type="text" asp-for="Forename" readonly="@isReadOnly" />
         </div>
         <div>
-            <input type="text" asp-for="Surname" placeholder="Surname" readonly="@isReadOnly" />
+            <div><span>Surname</span></div>
+            <input type="text" asp-for="Surname" readonly="@isReadOnly" />
         </div>
         <div>
-            <input type="email" asp-for="Email" placeholder="Email Address" readonly="@isReadOnly" />
+            <div><span>Email</span></div>
+            <input type="email" asp-for="Email" readonly="@isReadOnly" />
         </div>
         <div>
+            <div><span>Date of Birth</span></div>
             <input type="date" asp-for="DateOfBirth" readonly="@isReadOnly" />
         </div>
         <div>

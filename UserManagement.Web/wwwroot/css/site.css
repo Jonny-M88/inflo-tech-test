@@ -37,7 +37,11 @@ form {
 /*#region USER FORM ELEMENT STYLE*/
 .input-container > div, input {
     user-select: none;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
+}
+
+.input-container span {
+    font-size: 10pt;
 }
 
 /* #endregion */
