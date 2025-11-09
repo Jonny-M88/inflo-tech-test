@@ -1,4 +1,5 @@
-﻿@model UserManagement.Web.Models.Users.UserListViewModel
+﻿@using UserManagement.Web.Constants
+@model UserManagement.Web.Models.Users.UserListViewModel
 
 <h2>User List</h2>
 
@@ -23,7 +24,7 @@
                     <td>@item.Forename</td>
                     <td>@item.Surname</td>
                     <td>@item.Email</td>
-                    <td>@item.DateOfBirth?.ToString("dd/MM/yyyy")</td>
+                    <td>@item.DateOfBirth?.ToString(Constants.DateTimeToStringImplementation)</td>
                     <td>@(item.IsActive ? "Yes" : "No")</td>
                     <td>
                         <div class="dropdown">

@@ -14,4 +14,6 @@ public class User : IEntity
     public string Email { get; set; } = default!;
     public DateOnly DateOfBirth { get; set; }
     public bool IsActive { get; set; }
+    long IEntity.EntityId {get => Id; set => Id = value;}
+    public string Quote { get; set; } = string.Empty;
 }

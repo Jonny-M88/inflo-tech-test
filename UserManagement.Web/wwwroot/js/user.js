@@ -1,11 +1,16 @@
 ﻿$(function () {
 
+    //CONSTANTS
+    const $logRows = $('.table-responsive tbody tr');
+
     //EVENT HANDLERS
     $('.input-container input').on("input change", validateUserForm);
 
+    $('#filter-log-btn').on('click', filterLogs);
+    $('#clear-log-btn').on('click', clearFilters);
+
 
     //HELPER FUNCTIONS
-
     //Validates form inputs
     function validateUserForm() {
 
@@ -47,7 +52,6 @@
             const input = $(this);
             const fieldName = input.attr('name');
             let value = input.val().trim();
-           
             currentUser[fieldName] = value;
         });
 
@@ -65,5 +69,41 @@
     //Checks to make sure a change has been made to the current user
     function checkUserForChanges() {
         return JSON.stringify(currentUser) !== JSON.stringify(user);
+    }
+    // Filter the log rows based on the date picker values
+    function filterLogs() {
+
+        const fromDate = parseDate($('#filter-from').val());
+        const toDate = parseDate($('#filter-to').val());
+
+        $logRows.each(function () {
+
+            //Get the date value from each row
+            const $row = $(this);
+            const actionDateStr = $row.find('.action-date').text().trim();
+
+            const actionDate = new Date(actionDateStr);
+
+            //determine if the row should be hidden or not
+            let show = true;
+            if (fromDate && actionDate < fromDate) show = false;
+            if (toDate && actionDate > toDate) show = false;
+
+            $row.toggle(show);
+        });
+
+    }
+    // Clear log filters
+    function clearFilters() {
+        $('#filter-from').val('');
+        $('#filter-to').val('');
+        $logRows.show();
+    }
+    //Formats the date
+    function parseDate(dateStr) {
+
+        if (!dateStr) return null;
+        const parts = dateStr.split('-');
+        return new Date(parts[0], parts[1] - 1, parts[2]);
     }
 });

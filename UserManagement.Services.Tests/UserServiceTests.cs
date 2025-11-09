@@ -1,45 +1,39 @@
-using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Implementations;
 
-namespace UserManagement.Data.Tests;
-
-public class UserServiceTests
+namespace UserManagement.Data.Tests
 {
-    [Fact]
-    public void GetAll_WhenContextReturnsEntities_MustReturnSameEntities()
+    public class UserServiceTests
     {
-        // Arrange: Initializes objects and sets the value of the data that is passed to the method under test.
-        var service = CreateService();
-        var users = SetupUsers();
+        private readonly Mock<IDataContext> _dataContext = new();
+        private UserService CreateService() => new(_dataContext.Object);
 
-        // Act: Invokes the method under test with the arranged parameters.
-        var result = service.GetAll();
-
-        // Assert: Verifies that the action of the method under test behaves as expected.
-        result.Should().BeSameAs(users);
-    }
-
-    private IQueryable<User> SetupUsers(string forename = "Johnny", string surname = "User", string email = "juser@example.com", bool isActive = true)
-    {
-        var users = new[]
+        [Fact]
+        public async Task GetAllUsersAsync_WhenContextReturnsEntities_ShouldReturnSameEntities()
         {
-            new User
+
+            var users = new List<User>
             {
-                Forename = forename,
-                Surname = surname,
-                Email = email,
-                IsActive = isActive
-            }
-        }.AsQueryable();
+                new User
+                {
+                    Forename = "Johnny",
+                    Surname = "User",
+                    Email = "juser@example.com",
+                    IsActive = true
+                }
+            };
 
-        _dataContext
-            .Setup(s => s.GetAll<User>())
-            .Returns(users);
+            _dataContext
+                .Setup(s => s.GetAllAsync<User>())
+                .ReturnsAsync(users);
 
-        return users;
+            var service = CreateService();
+
+            List<User> result = await service.GetAllUsersAsync();
+
+            result.Should().BeSameAs(users);
+        }
     }
-
-    private readonly Mock<IDataContext> _dataContext = new();
-    private UserService CreateService() => new(_dataContext.Object);
 }

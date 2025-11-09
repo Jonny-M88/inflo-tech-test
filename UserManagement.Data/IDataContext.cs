@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using UserManagement.Data.Interfaces;
 
 namespace UserManagement.Data;
@@ -6,31 +7,55 @@ namespace UserManagement.Data;
 public interface IDataContext
 {
     /// <summary>
-    /// Get a list of items
+    /// Get a list of entities
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <returns></returns>
-    IQueryable<TEntity> GetAll<TEntity>() where TEntity : class;
-
-    IQueryable<TEntity> GetActive<TEntity>() where TEntity : class, IEntity;
-    IQueryable<TEntity> GetInactive<TEntity>() where TEntity : class, IEntity;
-    IQueryable<TEntity> GetById<TEntity>(long id) where TEntity : class, IEntity;
-
+    Task<List<TEntity>> GetAllAsync<TEntity>() where TEntity : class, IEntity;
     /// <summary>
-    /// Create a new item
+    /// Get active entities
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <returns></returns>
+    Task<List<TEntity>> GetActiveAsync<TEntity>() where TEntity : class, IEntity;
+    /// <summary>
+    /// Get inactive entites
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <returns></returns>
+    Task<List<TEntity>> GetInactiveAsync<TEntity>() where TEntity : class, IEntity;
+    /// <summary>
+    /// Get an entity by Id
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    Task<TEntity?> GetByIdAsync<TEntity>(long id) where TEntity : class, IEntity;
+    /// <summary>
+    /// Get a list of Entities by EntityId
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    Task<List<TEntity>> GetByEntityIdAsync<TEntity>(long id) where TEntity : class, IEntity;
+    /// <summary>
+    /// Create a new entity
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <param name="entity"></param>
     /// <returns></returns>
-    void Create<TEntity>(TEntity entity) where TEntity : class;
-
+    Task<long> CreateAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
     /// <summary>
-    /// Uodate an existing item matching the ID
+    /// Updates an entity
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <param name="entity"></param>
-    /// <returns></returns>
-    void Update<TEntity>(TEntity entity) where TEntity : class;
-
-    void Delete<TEntity>(TEntity entity) where TEntity : class;
+    /// <returns>Id of the affected entity</returns>
+    Task<long> UpdateAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
+    /// <summary>
+    /// Deletes and entity
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <param name="entity"></param>
+    Task DeleteAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
 }

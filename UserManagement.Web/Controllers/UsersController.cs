@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using UserManagement.Data.Enum;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
 using UserManagement.Web.Enum;
@@ -13,17 +16,21 @@ public class UsersController : Controller
     public UsersController(IUserService userService) => _userService = userService;
 
     [HttpGet]
-    public ViewResult List()
+    public async Task<ViewResult> List()
     {
-        var items = _userService.GetAll().Select(u => new UserListItemViewModel
-        {
-            Id = u.Id,
-            Forename = u.Forename,
-            Surname = u.Surname,
-            Email = u.Email,
-            DateOfBirth = u.DateOfBirth,
-            IsActive = u.IsActive
-        });
+
+        var items = (await _userService.GetAllUsersAsync())
+            .Select(u => new UserListItemViewModel
+            {
+                Id = u.Id,
+                Forename = u.Forename,
+                Surname = u.Surname,
+                Email = u.Email,
+                DateOfBirth = u.DateOfBirth,
+                IsActive = u.IsActive,
+                Quote = u.Quote
+            })
+            .ToList();
 
         var model = new UserListViewModel
         {
@@ -34,9 +41,9 @@ public class UsersController : Controller
     }
 
     [HttpGet("filter")]
-    public ViewResult FilterByActive(bool isActive)
+    public async Task<ViewResult> FilterByActive(bool isActive)
     {
-        var items = _userService.FilterByActive(isActive)
+        var items = (await _userService.FilterUsersByActiveAsync(isActive))
          .Select(u => new UserListItemViewModel
          {
              Id = u.Id,
@@ -44,7 +51,8 @@ public class UsersController : Controller
              Surname = u.Surname,
              Email = u.Email,
              DateOfBirth = u.DateOfBirth,
-             IsActive = u.IsActive
+             IsActive = u.IsActive,
+             Quote = u.Quote
          })
          .ToList();
 
@@ -59,44 +67,63 @@ public class UsersController : Controller
     [HttpGet("create")]
     public IActionResult Create()
     {
-        var model = new UserListItemViewModel();
+        var model = new UserDetailsListViewModel();
         return View("UserView", model);
     }
 
     [HttpGet("/details/{id}/{mode?}")]
-    public IActionResult Details(long id, string? mode)
+    public async Task<IActionResult> Details(long id, string? mode)
     {
+
+        User? user = await _userService.GetUserByIdAsync(id);
+        if (user == null)
+            return NotFound();
+
+        UserDetailsListViewModel model = new()
         {
-            var entity = _userService.GetById(id).FirstOrDefault();
-            if (entity == null)
-                return NotFound();
+            Id = user.Id,
+            Forename = user.Forename,
+            Surname = user.Surname,
+            Email = user.Email,
+            DateOfBirth = user.DateOfBirth,
+            IsActive = user.IsActive,
+            Mode = mode == "view" ? FormMode.View : FormMode.Edit,
+            Quote = user.Quote
+        };
 
-            UserListItemViewModel model = new()
-            {
-                Id = entity.Id,
-                Forename = entity.Forename,
-                Surname = entity.Surname,
-                Email = entity.Email,
-                DateOfBirth = entity.DateOfBirth,
-                IsActive = entity.IsActive,
-                Mode = mode == "view" ? FormMode.View : FormMode.Edit
-            };
-
-            return View("UserView", model);
+        //Only get logs for View mode, we don't show them any other time.
+        if (mode == "view")
+        {
+            model.Logs = (await _userService.GetLogRecordsByEntityIdAsync(id))
+                .Select(log => new LogRecordListItemViewModel
+                {
+                    Id = log.Id,
+                    EntityId = log.EntityId,
+                    Action = log.Action,
+                    ActionDate = log.ActionDate,
+                    IsActive = log.IsActive,
+                    PerformedBy = log.PerformedBy
+                })
+                .ToList();
         }
+
+        return View("UserView", model);
+
     }
 
     [HttpPost]
-    public IActionResult Save(UserListItemViewModel model)
+    public async Task<IActionResult> SaveAsync(UserDetailsListViewModel model)
     {
 
         if (!ModelState.IsValid)
             return View("UserView", model);
 
+        long affectedEntityId = -1;
+
         //Create new
         if (model.Mode == FormMode.Create)
         {
-            var entity = new User
+            User entity = new()
             {
                 Forename = model.Forename!,
                 Surname = model.Surname!,
@@ -104,32 +131,45 @@ public class UsersController : Controller
                 DateOfBirth = model.DateOfBirth!.Value,
                 IsActive = model.IsActive
             };
-            _userService.Create(entity);
+            affectedEntityId = await _userService.CreateAsync(entity);
+
         }
         else //Update existing
         {
-            var entity = _userService.GetById(model.Id).FirstOrDefault();
-            if (entity == null) return NotFound();
+            var userEntity = await _userService.GetUserByIdAsync(model.Id);
+            if (userEntity == null) return NotFound();
 
-            entity.Forename = model.Forename!;
-            entity.Surname = model.Surname!;
-            entity.Email = model.Email!;
-            entity.DateOfBirth = model.DateOfBirth!.Value;
-            entity.IsActive = model.IsActive;
+            userEntity.Forename = model.Forename!;
+            userEntity.Surname = model.Surname!;
+            userEntity.Email = model.Email!;
+            userEntity.DateOfBirth = model.DateOfBirth!.Value;
+            userEntity.IsActive = model.IsActive;
 
-            _userService.Update(entity);
+            affectedEntityId = await _userService.UpdateAsync(userEntity);
+        }
+
+        if (affectedEntityId != -1)
+        {
+            LogRecord logRecord = new()
+            {
+                Action = model.Mode == FormMode.Create ? LogAction.Create : LogAction.Update,
+                ActionDate = DateTime.UtcNow,
+                EntityId = affectedEntityId,
+                PerformedBy = Environment.UserName
+            };
+            await _userService.CreateAsync(logRecord);
         }
 
         return RedirectToAction("List");
     }
 
     [HttpGet("delete/{id}")]
-    public IActionResult Delete(long id)
+    public async Task<IActionResult> DeleteAsync(long id)
     {
-        var entity = _userService.GetById(id).FirstOrDefault();
+        var entity = await _userService.GetUserByIdAsync(id);
         if (entity == null) return NotFound();
 
-        _userService.Delete(entity);
+        await _userService.DeleteAsync(entity);
         return RedirectToAction("List");
     }
 }

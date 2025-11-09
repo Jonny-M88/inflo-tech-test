@@ -17,4 +17,5 @@ public class UserListItemViewModel
     public DateOnly? DateOfBirth { get; set; } = null;
     public bool IsActive { get; set; } = true;
     public FormMode Mode { get; set; } = FormMode.Create;
+    public string Quote { get; set; } = string.Empty;
 }

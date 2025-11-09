@@ -2,9 +2,12 @@
 @using System.Text.Json.Serialization
 @using UserManagement.Web.Constants
 @using UserManagement.Web.Enum
-@model UserManagement.Web.Models.Users.UserListItemViewModel
+@using UserManagement.Web.Models.Users
+
+@model UserManagement.Web.Models.Users.UserDetailsListViewModel
 @{
     bool isReadOnly = Model.Mode == FormMode.View;
+    bool hasQuote = !string.IsNullOrWhiteSpace(Model.Quote);
 }
 
 @* Determine the view title based on the form mode *@
@@ -17,8 +20,14 @@
     })
 </h2>
 
+@if (isReadOnly && hasQuote)
+{
+    <div>
+        <span class="quote-span">"@Model.Quote"</span>
+    </div>
+}
 
-<form asp-controller="Users" asp-action="Save" method="post">
+<Form asp-controller="Users" asp-action="Save" method="post">
 
     @* Input elements associated with user properties *@
     <div class="input-container">
@@ -36,7 +45,7 @@
             <input type="email" asp-for="Email" placeholder="Email Address" readonly="@isReadOnly" />
         </div>
         <div>
-            <input type="date" asp-for="DateOfBirth" placeholder="Date of Birth" readonly="@isReadOnly" />
+            <input type="date" asp-for="DateOfBirth" readonly="@isReadOnly" />
         </div>
         <div>
             <label>
@@ -61,12 +70,56 @@
         </div>
     </div>
 
-</form>
+</Form>
+
+@* Only show the log file in View mode *@
+@if (isReadOnly)
+{
+    <h2>Activity Log</h2>
+
+    <div class="log-filter-container">
+        <div>
+            <label for="filter-from" class="form-label">From:</label>
+            <input type="date" id="filter-from" class="form-control">
+        </div>
+        <div>
+            <label for="filter-to" class="form-label">To:</label>
+            <input type="date" id="filter-to" class="form-control">
+        </div>
+        <div>
+            <button type="button" id="filter-log-btn" class="btn btn-primary">Filter</button>
+            <button type="button" id="clear-log-btn" class="btn btn-secondary">Clear</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ActionPerformed</th>
+                    <th>Performed By</th>
+                    <th>Performed On</th>
+                    <th style="width: 1px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Logs)
+                {
+                    <tr>
+                        <td>@item.Action.ToString()</td>
+                        <td>@item.PerformedBy</td>
+                        <td class="action-date">@item.ActionDate.ToString(Constants.DateTimeToStringImplementation)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
 
 <script>
-    const user = @Html.Raw(JsonSerializer.Serialize(Model, Constants.DefaultSerializerOptions))
-    console.log(user)
-    var currentUser = {...user};
+    const user = @Html.Raw(JsonSerializer.Serialize(Model, Constants.DefaultSerializerOptions));
+    let currentUser = {...user};
 </script>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

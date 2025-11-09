@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using UserManagement.Data;
+using UserManagement.Data.Interfaces;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
 
@@ -8,58 +9,67 @@ namespace UserManagement.Services.Domain.Implementations;
 
 public class UserService : IUserService
 {
+
     private readonly IDataContext _dataAccess;
     public UserService(IDataContext dataAccess) => _dataAccess = dataAccess;
 
     /// <summary>
-    /// Return users by active state
+    /// Return entites by active state
     /// </summary>
     /// <param name="isActive"></param>
     /// <returns></returns>
-    public IEnumerable<User> FilterByActive(bool isActive)
+    public async Task<List<User>> FilterUsersByActiveAsync(bool isActive)
     {
-        return isActive ? _dataAccess.GetActive<User>() : _dataAccess.GetInactive<User>();
+        return isActive ? await _dataAccess.GetActiveAsync<User>() : await _dataAccess.GetInactiveAsync<User>();
     }
-
     /// <summary>
-    /// Returns all users
+    /// Returns all entities of type
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<User> GetAll() => _dataAccess.GetAll<User>();
-
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        return await _dataAccess.GetAllAsync<User>();
+    }
     /// <summary>
-    /// Returns a user by Id
+    /// Returns an entity by Id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public IQueryable<User> GetById(long id) => _dataAccess.GetById<User>(id);
-
+    public async Task<User?> GetUserByIdAsync(long id)
+    {
+        return await _dataAccess.GetByIdAsync<User>(id);
+    }
     /// <summary>
-    /// Creates a new user
+    /// Returns a list of entity by EntityId
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public async Task<List<LogRecord>> GetLogRecordsByEntityIdAsync(long id)
+    {
+        return await _dataAccess.GetByEntityIdAsync<LogRecord>(id);
+    } 
+    /// <summary>
+    /// Creates a new entity
     /// </summary>
     /// <param name="entity"></param>
-    public void Create(User entity)
+    public async Task<long> CreateAsync(IEntity entity)
     {
-        _dataAccess.Create(entity);
+        return await _dataAccess.CreateAsync(entity);
     }
-
     /// <summary>
-    /// Updates an existing  user
+    /// Updates an existing entity
     /// </summary>
     /// <param name="entity"></param>
-    public void Update(User entity)
+    public async Task<long> UpdateAsync(IEntity entity)
     {
-        _dataAccess.Update(entity);
+        return await _dataAccess.UpdateAsync(entity);
     }
-
     /// <summary>
-    /// Deletes a user
+    /// Deletes an entity
     /// </summary>
     /// <param name="entity"></param>
-    public void Delete(User entity)
+    public async Task DeleteAsync(IEntity entity)
     {
-        _dataAccess.Delete(entity);
+        await _dataAccess.DeleteAsync(entity);
     }
-
-
 }

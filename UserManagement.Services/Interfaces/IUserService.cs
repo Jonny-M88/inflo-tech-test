@@ -1,38 +1,49 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
+using UserManagement.Data.Interfaces;
 using UserManagement.Models;
 
 namespace UserManagement.Services.Domain.Interfaces;
 
-public interface IUserService 
+public interface IUserService
 {
+    /// <summary>
+    /// Returns all user entities
+    /// </summary>
+    /// <returns></returns>
+    Task<List<User>> GetAllUsersAsync();
     /// <summary>
     /// Return users by active state
     /// </summary>
     /// <param name="isActive"></param>
     /// <returns></returns>
-    IEnumerable<User> FilterByActive(bool isActive);
-    /// <summary>
-    /// Returns all users
-    /// </summary>
-    /// <returns></returns>
-    IEnumerable<User> GetAll();
+    Task<List<User>> FilterUsersByActiveAsync(bool isActive);
     /// <summary>
     /// Returns a user by Id or null if none exists
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    IQueryable<User> GetById(long id);
+    Task<User?> GetUserByIdAsync(long id);
     /// <summary>
-    /// Create a new user
+    /// Returns a list of LogRecords by EntityId
     /// </summary>
-    public void Create(User entity);
+    /// <param name="id"></param>
+    /// <returns></returns>
+    Task<List<LogRecord>> GetLogRecordsByEntityIdAsync(long id);
     /// <summary>
-    /// Update an existing user
+    /// Creates a new Entity
     /// </summary>
-    public void Update(User entity);
+    /// <param name="entity"></param>
+    /// <returns>Created Entity's Id</returns>
+    Task<long> CreateAsync(IEntity entity);
+    /// <summary>
+    /// Updates an existing Entity
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns>Updated Entity's Id</returns>
+    Task<long> UpdateAsync(IEntity entity);
     /// <summary>
     /// Delete a user
     /// </summary>
-    public void Delete(User entity);
+    Task DeleteAsync(IEntity entity);
 }
