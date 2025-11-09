@@ -3,13 +3,16 @@ Notes:
     1. User filtering by IsActive will be more efficient if done in JavaScript/JQuery. All users are returned on page load, so additional GET calls are unnecessary.
     Added the additional GETS because I felt itwas more inkeeping with the scope of the tech test. (Implemented js filter on user logs instead)
 
-    2. UI requires additional minor work (Confirmation on Delete, unsaved change warnings on Edit/Create etc...) and obviously... Styling.
+    2. UI requires additional minor work (Confirmation on Delete, unsaved change warnings on Edit/Create, Warning labels on invalid form inputs etc...) and obviously... Styling.
 
     3. Polymophised the data service so endpoints can return multiple entity types
 
     4. Made all of the service functionality asynchrnonous to free threads during I/O Operations (scalability + performance).
 
-
+    5. Form validation when creating and editing users:
+        - Forename and Surname must be at least 2 characters.
+        - Email address must be valid format (uses RegEx).
+        - Date of birth must be set.
 
     Additional:
 

@@ -5,7 +5,6 @@
 
     //EVENT HANDLERS
     $('.input-container input').on("input change", validateUserForm);
-
     $('#filter-log-btn').on('click', filterLogs);
     $('#clear-log-btn').on('click', clearFilters);
 
