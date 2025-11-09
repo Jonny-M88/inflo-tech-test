@@ -6,6 +6,7 @@ namespace UserManagement.Web.Constants
     public static class Constants
     {
         public static readonly string DateTimeToStringImplementation = "yyyy/MM/dd";
+        public static readonly string DefaultUsername = "Unknown";
         public static readonly JsonSerializerOptions DefaultSerializerOptions;
 
         static Constants()

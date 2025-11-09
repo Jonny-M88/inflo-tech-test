@@ -6,6 +6,7 @@ using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
 using UserManagement.Web.Enum;
 using UserManagement.Web.Models.Users;
+using UserManagement.Web.Constants;
 
 namespace UserManagement.WebMS.Controllers;
 
@@ -150,12 +151,14 @@ public class UsersController : Controller
 
         if (affectedEntityId != -1)
         {
+            string username = Environment.UserName;
+
             LogRecord logRecord = new()
             {
                 Action = model.Mode == FormMode.Create ? LogAction.Create : LogAction.Update,
                 ActionDate = DateTime.UtcNow,
                 EntityId = affectedEntityId,
-                PerformedBy = Environment.UserName
+                PerformedBy = !string.IsNullOrWhiteSpace(username) ? username : Constants.DefaultUsername
             };
             await _userService.CreateAsync(logRecord);
         }
