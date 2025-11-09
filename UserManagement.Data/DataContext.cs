@@ -18,7 +18,6 @@ public class DataContext : DbContext, IDataContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //Whomever came up with this user list deserves a raise.
         _configureEntity<User>(modelBuilder, new[]
         {
         new User { Id = 1, Forename = "Peter", Surname = "Loew", Email = "ploew@example.com", DateOfBirth = new DateOnly(1989, 06, 02),  IsActive = true, Quote = "I'M A VAMPIRE!" },
