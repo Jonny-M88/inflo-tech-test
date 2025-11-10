@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UserManagement.Models;
 
@@ -15,9 +16,11 @@ public class DataContextTests
         {
             Forename = "Brand New",
             Surname = "User",
-            Email = "brandnewuser@example.com"
+            Email = "brandnewuser@example.com",
+            IsActive = true,
+            DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow)
         };
-        await context.CreateAsync(entity);
+        await context.CommitAsync(entity, Enum.CommitAction.Create);
 
         // Act: Invokes the method under test with the arranged parameters.
         var result = await context.GetAllAsync<User>();
@@ -34,7 +37,7 @@ public class DataContextTests
         // Arrange: Initializes objects and sets the value of the data that is passed to the method under test.
         var context = CreateContext();
         List<User> users =  await context.GetAllAsync<User>();
-        await context.DeleteAsync(users[0]);
+        await context.CommitAsync(users[0], Enum.CommitAction.Delete);
 
         // Act: Invokes the method under test with the arranged parameters.
         List<User> usersAfter = await context.GetAllAsync<User>();

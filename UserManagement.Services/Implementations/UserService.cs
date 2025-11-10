@@ -54,7 +54,7 @@ public class UserService : IUserService
     /// <param name="entity"></param>
     public async Task<long> CreateAsync(IEntity entity)
     {
-        return await _dataAccess.CreateAsync(entity);
+        return await _dataAccess.CommitAsync(entity, Data.Enum.CommitAction.Create);
     }
     /// <summary>
     /// Updates an existing entity
@@ -62,7 +62,7 @@ public class UserService : IUserService
     /// <param name="entity"></param>
     public async Task<long> UpdateAsync(IEntity entity)
     {
-        return await _dataAccess.UpdateAsync(entity);
+        return await _dataAccess.CommitAsync(entity, Data.Enum.CommitAction.Update);
     }
     /// <summary>
     /// Deletes an entity
@@ -70,6 +70,6 @@ public class UserService : IUserService
     /// <param name="entity"></param>
     public async Task DeleteAsync(IEntity entity)
     {
-        await _dataAccess.DeleteAsync(entity);
+        await _dataAccess.CommitAsync(entity, Data.Enum.CommitAction.Delete);
     }
 }

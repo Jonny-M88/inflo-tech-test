@@ -13,6 +13,6 @@ public class LogRecord : IEntity
     public long EntityId { get; set; }
     public string PerformedBy { get; set; } = string.Empty;
     public DateTime ActionDate { get; set; }
-    public LogAction Action { get; set; }
+    public CommitAction Action { get; set; }
     public bool IsActive { get; set; }
 }

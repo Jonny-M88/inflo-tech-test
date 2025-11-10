@@ -4,18 +4,26 @@ using System.Threading.Tasks;
 using UserManagement.Data.Enum;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
-using UserManagement.Web.Enum;
-using UserManagement.Web.Models.Users;
 using UserManagement.Web.Constants;
+using UserManagement.Web.Enum;
+using UserManagement.Web.Models.Logs;
+using UserManagement.Web.Models.Users;
 
 namespace UserManagement.WebMS.Controllers;
 
-[Route("users")]
+[Route(Constants.BaseUsersRoute)]
 public class UsersController : Controller
 {
     private readonly IUserService _userService;
-    public UsersController(IUserService userService) => _userService = userService;
+    public UsersController(IUserService userService)
+    {
+        _userService = userService;
+    }
 
+    /// <summary>
+    /// Gets all users via the user service
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public async Task<ViewResult> List()
     {
@@ -41,7 +49,12 @@ public class UsersController : Controller
         return View(model);
     }
 
-    [HttpGet("filter")]
+    /// <summary>
+    /// Gets a list of active or inactive users via the user service
+    /// </summary>
+    /// <param name="isActive"></param>
+    /// <returns></returns>
+    [HttpGet(Constants.FilterUsersRoute)]
     public async Task<ViewResult> FilterByActive(bool isActive)
     {
         var items = (await _userService.FilterUsersByActiveAsync(isActive))
@@ -65,17 +78,26 @@ public class UsersController : Controller
         return View("List", model);
     }
 
-    [HttpGet("create")]
+    /// <summary>
+    /// Displays the UserView view in create mode
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet(Constants.CreateUsersRoute)]
     public IActionResult Create()
     {
         var model = new UserDetailsListViewModel();
         return View("UserView", model);
     }
 
-    [HttpGet("/details/{id}/{mode?}")]
+    /// <summary>
+    /// Displays the UserView view in either View or Edit mode
+    /// </summary>
+    /// <param name="id">The Id of the selected User</param>
+    /// <param name="mode">The mode in which to open the UserView view</param>
+    /// <returns></returns>
+    [HttpGet(Constants.DetailsUserRoute)]
     public async Task<IActionResult> Details(long id, string? mode)
     {
-
         User? user = await _userService.GetUserByIdAsync(id);
         if (user == null)
             return NotFound();
@@ -109,9 +131,13 @@ public class UsersController : Controller
         }
 
         return View("UserView", model);
-
     }
 
+    /// <summary>
+    /// Commits changes to a new or existing user
+    /// </summary>
+    /// <param name="model">The model to be committed to the database</param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> SaveAsync(UserDetailsListViewModel model)
     {
@@ -155,7 +181,7 @@ public class UsersController : Controller
 
             LogRecord logRecord = new()
             {
-                Action = model.Mode == FormMode.Create ? LogAction.Create : LogAction.Update,
+                Action = model.Mode == FormMode.Create ? CommitAction.Create : CommitAction.Update,
                 ActionDate = DateTime.UtcNow,
                 EntityId = affectedEntityId,
                 PerformedBy = !string.IsNullOrWhiteSpace(username) ? username : Constants.DefaultUsername
@@ -166,7 +192,12 @@ public class UsersController : Controller
         return RedirectToAction("List");
     }
 
-    [HttpGet("delete/{id}")]
+    /// <summary>
+    /// Deletes an existing user
+    /// </summary>
+    /// <param name="id">The Id of the user to be deleted</param>
+    /// <returns></returns>
+    [HttpGet(Constants.DeleteUserRoute)]
     public async Task<IActionResult> DeleteAsync(long id)
     {
         var entity = await _userService.GetUserByIdAsync(id);

@@ -5,20 +5,24 @@ namespace UserManagement.Web.Constants
 {
     public static class Constants
     {
+        //Global defaults
         public static readonly string DateTimeToStringImplementation = "yyyy/MM/dd";
         public static readonly string DefaultUsername = "Unknown";
-        public static readonly JsonSerializerOptions DefaultSerializerOptions;
-
-        static Constants()
+        public static readonly JsonSerializerOptions DefaultSerializerOptions = new()
         {
-            //Camelcases json properties
-            DefaultSerializerOptions = new JsonSerializerOptions
+            PropertyNamingPolicy = null,
+            Converters =
             {
-                PropertyNamingPolicy = null
-            };
+                new JsonStringEnumConverter()
+            }
+        };
 
-            //Converts enum values to string
-            DefaultSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        }
+        //Routes
+        public const string BaseUsersRoute = "users";
+        public const string FilterUsersRoute = "filter";
+        public const string CreateUsersRoute = "create";
+        public const string DetailsUserRoute = "/details/{id}/{mode?}";
+        public const string DeleteUserRoute = "delete/{id}";
+
     }
 }

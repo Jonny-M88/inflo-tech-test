@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using UserManagement.Data.Enum;
 using UserManagement.Data.Interfaces;
 
 namespace UserManagement.Data;
@@ -44,18 +45,6 @@ public interface IDataContext
     /// <typeparam name="TEntity"></typeparam>
     /// <param name="entity"></param>
     /// <returns></returns>
-    Task<long> CreateAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
-    /// <summary>
-    /// Updates an entity
-    /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <param name="entity"></param>
-    /// <returns>Id of the affected entity</returns>
-    Task<long> UpdateAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
-    /// <summary>
-    /// Deletes and entity
-    /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <param name="entity"></param>
-    Task DeleteAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
+    Task<long> CommitAsync<TEntity>(TEntity entity, CommitAction commitType) where TEntity : class, IEntity;
+
 }

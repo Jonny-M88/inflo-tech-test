@@ -1,7 +1,7 @@
 ﻿namespace UserManagement.Data.Enum;
-public enum LogAction
+public enum CommitAction
 {
     Create,
     Update,
-    View
+    Delete
 }

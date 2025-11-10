@@ -1,5 +1,6 @@
 ﻿using System;
 using UserManagement.Web.Enum;
+using UserManagement.Web.Models.Logs;
 
 namespace UserManagement.Web.Models.Users;
 
